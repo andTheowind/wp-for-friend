@@ -76,19 +76,19 @@ function extract_from_markers( $filename, $marker ) {
 	$state = false;
 
 	foreach ( $markerdata as $markerline ) {
-		if ( str_contains( $markerline, '# END ' . $marker ) ) {
+		if ( false !== strpos( $markerline, '# END ' . $marker ) ) {
 			$state = false;
 		}
 
 		if ( $state ) {
-			if ( str_starts_with( $markerline, '#' ) ) {
+			if ( '#' === substr( $markerline, 0, 1 ) ) {
 				continue;
 			}
 
 			$result[] = $markerline;
 		}
 
-		if ( str_contains( $markerline, '# BEGIN ' . $marker ) ) {
+		if ( false !== strpos( $markerline, '# BEGIN ' . $marker ) ) {
 			$state = true;
 		}
 	}
@@ -194,10 +194,10 @@ Any changes to the directives between these markers will be overwritten.'
 	$found_end_marker = false;
 
 	foreach ( $lines as $line ) {
-		if ( ! $found_marker && str_contains( $line, $start_marker ) ) {
+		if ( ! $found_marker && false !== strpos( $line, $start_marker ) ) {
 			$found_marker = true;
 			continue;
-		} elseif ( ! $found_end_marker && str_contains( $line, $end_marker ) ) {
+		} elseif ( ! $found_end_marker && false !== strpos( $line, $end_marker ) ) {
 			$found_end_marker = true;
 			continue;
 		}
@@ -414,12 +414,7 @@ function wp_print_theme_file_tree( $tree, $level = 2, $size = 1, $index = 1 ) {
 				aria-level="<?php echo esc_attr( $level ); ?>"
 				aria-setsize="<?php echo esc_attr( $size ); ?>"
 				aria-posinset="<?php echo esc_attr( $index ); ?>">
-				<span class="folder-label"><?php echo esc_html( $label ); ?> <span class="screen-reader-text">
-					<?php
-					/* translators: Hidden accessibility text. */
-					_e( 'folder' );
-					?>
-				</span><span aria-hidden="true" class="icon"></span></span>
+				<span class="folder-label"><?php echo esc_html( $label ); ?> <span class="screen-reader-text"><?php _e( 'folder' ); ?></span><span aria-hidden="true" class="icon"></span></span>
 				<ul role="group" class="tree-folder"><?php wp_print_theme_file_tree( $theme_file, $level + 1, $index, $size ); ?></ul>
 			</li>
 			<?php
@@ -516,12 +511,7 @@ function wp_print_plugin_file_tree( $tree, $label = '', $level = 2, $size = 1, $
 				aria-level="<?php echo esc_attr( $level ); ?>"
 				aria-setsize="<?php echo esc_attr( $size ); ?>"
 				aria-posinset="<?php echo esc_attr( $index ); ?>">
-				<span class="folder-label"><?php echo esc_html( $label ); ?> <span class="screen-reader-text">
-					<?php
-					/* translators: Hidden accessibility text. */
-					_e( 'folder' );
-					?>
-				</span><span aria-hidden="true" class="icon"></span></span>
+				<span class="folder-label"><?php echo esc_html( $label ); ?> <span class="screen-reader-text"><?php _e( 'folder' ); ?></span><span aria-hidden="true" class="icon"></span></span>
 				<ul role="group" class="tree-folder"><?php wp_print_plugin_file_tree( $plugin_file, '', $level + 1, $index, $size ); ?></ul>
 			</li>
 			<?php
@@ -750,7 +740,7 @@ function set_screen_options() {
 		default:
 			$screen_option = false;
 
-			if ( str_ends_with( $option, '_page' ) || 'layout_columns' === $option ) {
+			if ( '_page' === substr( $option, -5 ) || 'layout_columns' === $option ) {
 				/**
 				 * Filters a screen option value before it is set.
 				 *
@@ -1022,12 +1012,7 @@ function admin_color_scheme_picker( $user_id ) {
 	}
 	?>
 	<fieldset id="color-picker" class="scheme-list">
-		<legend class="screen-reader-text"><span>
-			<?php
-			/* translators: Hidden accessibility text. */
-			_e( 'Admin Color Scheme' );
-			?>
-		</span></legend>
+		<legend class="screen-reader-text"><span><?php _e( 'Admin Color Scheme' ); ?></span></legend>
 		<?php
 		wp_nonce_field( 'save-color-scheme', 'color-nonce', false );
 		foreach ( $_wp_admin_css_colors as $color => $color_info ) :
@@ -1472,7 +1457,7 @@ function update_option_new_admin_email( $old_value, $value ) {
 	);
 	update_option( 'adminhash', $new_admin_email );
 
-	$switched_locale = switch_to_user_locale( get_current_user_id() );
+	$switched_locale = switch_to_locale( get_user_locale() );
 
 	/* translators: Do not translate USERNAME, ADMIN_URL, EMAIL, SITENAME, SITEURL: those are placeholders. */
 	$email_text = __(
@@ -1572,16 +1557,7 @@ function _wp_privacy_settings_filter_draft_page_titles( $title, $page ) {
  * @since 5.1.0
  * @since 5.1.1 Added the {@see 'wp_is_php_version_acceptable'} filter.
  *
- * @return array|false {
- *     Array of PHP version data. False on failure.
- *
- *     @type string $recommended_version The PHP version recommended by WordPress.
- *     @type string $minimum_version     The minimum required PHP version.
- *     @type bool   $is_supported        Whether the PHP version is actively supported.
- *     @type bool   $is_secure           Whether the PHP version receives security updates.
- *     @type bool   $is_acceptable       Whether the PHP version is still acceptable or warnings
- *                                       should be shown and an update recommended.
- * }
+ * @return array|false Array of PHP version data. False on failure.
  */
 function wp_check_php_version() {
 	$version = PHP_VERSION;
@@ -1604,6 +1580,14 @@ function wp_check_php_version() {
 			return false;
 		}
 
+		/**
+		 * Response should be an array with:
+		 *  'recommended_version' - string - The PHP version recommended by WordPress.
+		 *  'is_supported' - boolean - Whether the PHP version is actively supported.
+		 *  'is_secure' - boolean - Whether the PHP version receives security updates.
+		 *  'is_acceptable' - boolean - Whether the PHP version is still acceptable or warnings
+		 *                              should be shown and an update recommended.
+		 */
 		$response = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! is_array( $response ) ) {

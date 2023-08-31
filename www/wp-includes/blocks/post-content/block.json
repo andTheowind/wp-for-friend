@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
+	"apiVersion": 2,
 	"name": "core/post-content",
 	"title": "Post Content",
 	"category": "theme",
@@ -10,10 +10,7 @@
 	"supports": {
 		"align": [ "wide", "full" ],
 		"html": false,
-		"layout": true,
-		"dimensions": {
-			"minHeight": true
-		},
+		"__experimentalLayout": true,
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,

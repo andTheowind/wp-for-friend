@@ -5,7 +5,7 @@ services:
     volumes:
       - ./www:/var/www/html
     ports:
-      - 8080:80
+      - 80:80
     links:
       - "mysql"
   myadmin:
@@ -24,10 +24,12 @@ services:
   mysql:
     image: mariadb:latest
     environment:
+      MYSQL_DATABASE: wp_base
       MARIADB_USER: user
       MARIADB_PASSWORD: user
       MARIADB_ROOT_PASSWORD: root
     volumes:
       - ./data:/var/lib/mysql
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3306:3306

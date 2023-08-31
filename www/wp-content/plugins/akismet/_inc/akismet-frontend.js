@@ -5,22 +5,6 @@
  */
 
 ( function() {
-	// Passive event listeners are guaranteed to never call e.preventDefault(),
-	// but they're not supported in all browsers.  Use this feature detection
-	// to determine whether they're available for use.
-	var supportsPassive = false;
-
-	try {
-		var opts = Object.defineProperty( {}, 'passive', {
-			get : function() {
-				supportsPassive = true;
-			}
-		} );
-
-		window.addEventListener( 'testPassive', null, opts );
-		window.removeEventListener( 'testPassive', null, opts );
-	} catch ( e ) {}
-
 	function init() {
 		var input_begin = '';
 
@@ -59,18 +43,6 @@
 
 		for ( var i = 0; i < forms.length; i++ ) {
 			var form = forms[i];
-
-			var formAction = form.getAttribute( 'action' );
-
-			// Ignore forms that POST directly to other domains; these could be things like payment forms.
-			if ( formAction ) {
-				// Check that the form is posting to an external URL, not a path.
-				if ( formAction.indexOf( 'http://' ) == 0 || formAction.indexOf( 'https://' ) == 0 ) {
-					if ( formAction.indexOf( 'http://' + window.location.hostname + '/' ) != 0 && formAction.indexOf( 'https://' + window.location.hostname + '/' ) != 0 ) {
-						continue;
-					}
-				}
-			}
 
 			form.addEventListener( 'submit', function () {
 				var ak_bkp = prepare_timestamp_array_for_request( keypresses );
@@ -129,7 +101,7 @@
 					field.setAttribute( 'value', input_fields[ field_name ] );
 					this.appendChild( field );
 				}
-			}, supportsPassive ? { passive: true } : false  );
+			} );
 
 			form.addEventListener( 'keydown', function ( e ) {
 				// If you hold a key down, some browsers send multiple keydown events in a row.
@@ -157,7 +129,7 @@
 				}
 
 				lastKeydown = keydownTime;
-			}, supportsPassive ? { passive: true } : false  );
+			} );
 
 			form.addEventListener( 'keyup', function ( e ) {
 				if ( ! ( e.key in keydowns ) ) {
@@ -195,24 +167,24 @@
 				delete keydowns[ e.key ];
 
 				lastKeyup = keyupTime;
-			}, supportsPassive ? { passive: true } : false  );
+			} );
 
 			form.addEventListener( "focusin", function ( e ) {
 				lastKeydown = null;
 				lastKeyup = null;
 				keydowns = {};
-			}, supportsPassive ? { passive: true } : false  );
+			} );
 
 			form.addEventListener( "focusout", function ( e ) {
 				lastKeydown = null;
 				lastKeyup = null;
 				keydowns = {};
-			}, supportsPassive ? { passive: true } : false  );
+			} );
 		}
 
 		document.addEventListener( 'mousedown', function ( e ) {
 			lastMousedown = ( new Date() ).getTime();
-		}, supportsPassive ? { passive: true } : false  );
+		} );
 
 		document.addEventListener( 'mouseup', function ( e ) {
 			if ( ! lastMousedown ) {
@@ -237,7 +209,7 @@
 			lastKeydown = null;
 			lastKeyup = null;
 			keydowns = {};
-		}, supportsPassive ? { passive: true } : false  );
+		} );
 
 		document.addEventListener( 'mousemove', function ( e ) {
 			if ( mousemoveTimer ) {
@@ -251,7 +223,7 @@
 			}
 
 			mousemoveTimer = setTimeout( function ( theEvent, originalMousemoveStart ) {
-				var now = ( new Date() ).getTime() - 500; // To account for the timer delay.
+				var now = ( new Date() ).getTime() - 250; // To account for the timer delay.
 
 				var mousemove = [];
 				mousemove.push( now - originalMousemoveStart );
@@ -271,8 +243,8 @@
 
 				mousemoveStart = null;
 				mousemoveTimer = null;
-			}, 500, e, mousemoveStart );
-		}, supportsPassive ? { passive: true } : false  );
+			}, 250, e, mousemoveStart );
+		} );
 
 		document.addEventListener( 'touchmove', function ( e ) {
 			if ( touchmoveCountTimer ) {
@@ -281,12 +253,12 @@
 
 			touchmoveCountTimer = setTimeout( function () {
 				touchmoveCount++;
-			}, 500 );
-		}, supportsPassive ? { passive: true } : false );
+			}, 250 );
+		} );
 
 		document.addEventListener( 'touchstart', function ( e ) {
 			lastTouchStart = ( new Date() ).getTime();
-		}, supportsPassive ? { passive: true } : false );
+		} );
 
 		document.addEventListener( 'touchend', function ( e ) {
 			if ( ! lastTouchStart ) {
@@ -311,7 +283,7 @@
 			lastKeydown = null;
 			lastKeyup = null;
 			keydowns = {};
-		}, supportsPassive ? { passive: true } : false );
+		} );
 
 		document.addEventListener( 'scroll', function ( e ) {
 			if ( scrollCountTimer ) {
@@ -320,8 +292,8 @@
 
 			scrollCountTimer = setTimeout( function () {
 				scrollCount++;
-			}, 500 );
-		}, supportsPassive ? { passive: true } : false );
+			}, 250 );
+		} );
 	}
 
 	/**

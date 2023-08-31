@@ -1,0 +1,29 @@
+// Отступы
+$indent-lg: $indent-lg / 2;
+$indent-md: $indent-md / 2;
+$indent-sm: $indent-sm / 2;
+$indent-list: 15px;
+
+
+// General fonts
+@mixin font-h1 {
+	font-size: 28px;
+	line-height: 32px;
+}
+
+@mixin font-h2 {
+	font-size: 18px;
+}
+
+@mixin font-h3 {
+	font-size: 14px;
+}
+
+@mixin font-p {
+	font-size: 15px;
+	line-height: 23px;
+}
+
+@mixin font-sign {
+	font-size: 11px;
+}

@@ -1,0 +1,71 @@
+@mixin transition($time: 0.2, $type: all)
+{
+	-webkit-transition: $type #{$time}s;
+	-moz-transition: $type #{$time}s;
+	-ms-transition: $type #{$time}s;
+	-o-transition: $type #{$time}s;
+	transition: $type #{$time}s;
+}
+
+@mixin transform-rotate($rotate) {
+	-webkit-transform: rotate(#{$rotate}deg);
+	-moz-transform: rotate(#{$rotate}deg);
+	-ms-transform: rotate(#{$rotate}deg);
+	-o-transform: rotate(#{$rotate}deg);
+	transform: rotate(#{$rotate}deg);
+}
+
+@mixin transform-translate($width) {
+	-webkit-transform: translate($width);
+	-moz-transform: translate($width);
+	-ms-transform: translate($width);
+	-o-transform: translate($width);
+	transform: translate($width);
+}
+
+@mixin box-shadow($prop: 0 0 19px 8px rgba(0,0,0,0.2)) {
+	-webkit-box-shadow: $prop;
+	-moz-box-shadow: $prop;
+	box-shadow: $prop;
+}
+
+@mixin translateX($prop) {
+	-webkit-transform: translateX($prop);
+	-moz-transform: translateX($prop);
+	-ms-transform: translateX($prop);
+	-o-transform: translateX($prop);
+	transform: translateX($prop);
+}
+
+// Отмена выделения
+@mixin user-select-none {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+@mixin background($size: cover, $position: center) {
+	background-repeat: no-repeat;
+	background-position: $position;
+	background-size: $size;
+}
+
+@mixin link {
+	display: inline-block;
+	color: #cf9b61;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	border-radius: 6px;
+	border: 1px solid #cf9b61;
+	text-align: center;
+	letter-spacing: 1px;
+	padding: 5px 22px 6px;
+	@include transition();
+
+	&:hover{
+		background-color: #cf9b61;
+		color: #fff;
+	}
+}

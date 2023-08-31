@@ -41,7 +41,7 @@ function _wp_admin_bar_init() {
 	 */
 	$admin_bar_class = apply_filters( 'wp_admin_bar_class', 'WP_Admin_Bar' );
 	if ( class_exists( $admin_bar_class ) ) {
-		$wp_admin_bar = new $admin_bar_class();
+		$wp_admin_bar = new $admin_bar_class;
 	} else {
 		return false;
 	}
@@ -122,22 +122,16 @@ function wp_admin_bar_render() {
  */
 function wp_admin_bar_wp_menu( $wp_admin_bar ) {
 	if ( current_user_can( 'read' ) ) {
-		$about_url      = self_admin_url( 'about.php' );
-		$contribute_url = self_admin_url( 'contribute.php' );
+		$about_url = self_admin_url( 'about.php' );
 	} elseif ( is_multisite() ) {
-		$about_url      = get_dashboard_url( get_current_user_id(), 'about.php' );
-		$contribute_url = get_dashboard_url( get_current_user_id(), 'contribute.php' );
+		$about_url = get_dashboard_url( get_current_user_id(), 'about.php' );
 	} else {
-		$about_url      = false;
-		$contribute_url = false;
+		$about_url = false;
 	}
 
 	$wp_logo_menu_args = array(
 		'id'    => 'wp-logo',
-		'title' => '<span class="ab-icon" aria-hidden="true"></span><span class="screen-reader-text">' .
-				/* translators: Hidden accessibility text. */
-				__( 'About WordPress' ) .
-			'</span>',
+		'title' => '<span class="ab-icon" aria-hidden="true"></span><span class="screen-reader-text">' . __( 'About WordPress' ) . '</span>',
 		'href'  => $about_url,
 	);
 
@@ -162,18 +156,6 @@ function wp_admin_bar_wp_menu( $wp_admin_bar ) {
 		);
 	}
 
-	if ( $contribute_url ) {
-		// Add contribute link.
-		$wp_admin_bar->add_node(
-			array(
-				'parent' => 'wp-logo',
-				'id'     => 'contribute',
-				'title'  => __( 'Get Involved' ),
-				'href'   => $contribute_url,
-			)
-		);
-	}
-
 	// Add WordPress.org link.
 	$wp_admin_bar->add_node(
 		array(
@@ -190,7 +172,7 @@ function wp_admin_bar_wp_menu( $wp_admin_bar ) {
 			'parent' => 'wp-logo-external',
 			'id'     => 'documentation',
 			'title'  => __( 'Documentation' ),
-			'href'   => __( 'https://wordpress.org/documentation/' ),
+			'href'   => __( 'https://wordpress.org/support/' ),
 		)
 	);
 
@@ -227,10 +209,7 @@ function wp_admin_bar_sidebar_toggle( $wp_admin_bar ) {
 		$wp_admin_bar->add_node(
 			array(
 				'id'    => 'menu-toggle',
-				'title' => '<span class="ab-icon" aria-hidden="true"></span><span class="screen-reader-text">' .
-						/* translators: Hidden accessibility text. */
-						__( 'Menu' ) .
-					'</span>',
+				'title' => '<span class="ab-icon" aria-hidden="true"></span><span class="screen-reader-text">' . __( 'Menu' ) . '</span>',
 				'href'  => '#',
 			)
 		);
@@ -434,14 +413,9 @@ function wp_admin_bar_site_menu( $wp_admin_bar ) {
  *
  * @since 5.9.0
  *
- * @global string $_wp_current_template_id
- * @since 6.3.0 Added `$_wp_current_template_id` global for editing of current template directly from the admin bar.
- *
  * @param WP_Admin_Bar $wp_admin_bar The WP_Admin_Bar instance.
  */
 function wp_admin_bar_edit_site_menu( $wp_admin_bar ) {
-	global $_wp_current_template_id;
-
 	// Don't show if a block theme is not activated.
 	if ( ! wp_is_block_theme() ) {
 		return;
@@ -456,13 +430,7 @@ function wp_admin_bar_edit_site_menu( $wp_admin_bar ) {
 		array(
 			'id'    => 'site-editor',
 			'title' => __( 'Edit site' ),
-			'href'  => add_query_arg(
-				array(
-					'postType' => 'wp_template',
-					'postId'   => $_wp_current_template_id,
-				),
-				admin_url( 'site-editor.php' )
-			),
+			'href'  => admin_url( 'site-editor.php' ),
 		)
 	);
 }
@@ -1003,7 +971,7 @@ function wp_admin_bar_comments_menu( $wp_admin_bar ) {
 	$awaiting_mod  = wp_count_comments();
 	$awaiting_mod  = $awaiting_mod->moderated;
 	$awaiting_text = sprintf(
-		/* translators: Hidden accessibility text. %s: Number of comments. */
+		/* translators: %s: Number of comments. */
 		_n( '%s Comment in moderation', '%s Comments in moderation', $awaiting_mod ),
 		number_format_i18n( $awaiting_mod )
 	);
@@ -1078,7 +1046,7 @@ function wp_admin_bar_appearance_menu( $wp_admin_bar ) {
 			array(
 				'parent' => 'appearance',
 				'id'     => 'background',
-				'title'  => _x( 'Background', 'custom background' ),
+				'title'  => __( 'Background' ),
 				'href'   => admin_url( 'themes.php?page=custom-background' ),
 				'meta'   => array(
 					'class' => 'hide-if-customize',
@@ -1092,7 +1060,7 @@ function wp_admin_bar_appearance_menu( $wp_admin_bar ) {
 			array(
 				'parent' => 'appearance',
 				'id'     => 'header',
-				'title'  => _x( 'Header', 'custom image header' ),
+				'title'  => __( 'Header' ),
 				'href'   => admin_url( 'themes.php?page=custom-header' ),
 				'meta'   => array(
 					'class' => 'hide-if-customize',
@@ -1119,7 +1087,7 @@ function wp_admin_bar_updates_menu( $wp_admin_bar ) {
 	}
 
 	$updates_text = sprintf(
-		/* translators: Hidden accessibility text. %s: Total number of updates available. */
+		/* translators: %s: Total number of updates available. */
 		_n( '%s update available', '%s updates available', $update_data['counts']['total'] ),
 		number_format_i18n( $update_data['counts']['total'] )
 	);
@@ -1151,10 +1119,7 @@ function wp_admin_bar_search_menu( $wp_admin_bar ) {
 
 	$form  = '<form action="' . esc_url( home_url( '/' ) ) . '" method="get" id="adminbarsearch">';
 	$form .= '<input class="adminbar-input" name="s" id="adminbar-search" type="text" value="" maxlength="150" />';
-	$form .= '<label for="adminbar-search" class="screen-reader-text">' .
-			/* translators: Hidden accessibility text. */
-			__( 'Search' ) .
-		'</label>';
+	$form .= '<label for="adminbar-search" class="screen-reader-text">' . __( 'Search' ) . '</label>';
 	$form .= '<input type="submit" class="adminbar-button" value="' . __( 'Search' ) . '" />';
 	$form .= '</form>';
 

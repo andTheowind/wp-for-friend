@@ -1,0 +1,13 @@
+User-Agent: *
+Disallow: /wp-admin
+Disallow: /wp-includes
+Disallow: /wp-json
+Disallow: /wp-content
+Disallow: /*.php
+Disallow: */feed*
+Allow: /wp-content/uploads/
+Allow: /wp-content/themes/
+Allow: /wp-admin/admin-ajax.php
+
+Host: https://bsvr-group.ru/
+Sitemap: https://bsvr-group.ru/sitemap_index.xml

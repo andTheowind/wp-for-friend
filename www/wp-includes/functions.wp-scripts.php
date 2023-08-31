@@ -9,7 +9,7 @@
  */
 
 /**
- * Initializes $wp_scripts if it has not been set.
+ * Initialize $wp_scripts if it has not been set.
  *
  * @global WP_Scripts $wp_scripts
  *
@@ -34,11 +34,11 @@ function wp_scripts() {
  * @since 4.2.0
  * @since 5.5.0 Added the `$handle` parameter.
  *
- * @param string $function_name Function name.
- * @param string $handle        Optional. Name of the script or stylesheet that was
- *                              registered or enqueued too early. Default empty.
+ * @param string $function Function name.
+ * @param string $handle   Optional. Name of the script or stylesheet that was
+ *                         registered or enqueued too early. Default empty.
  */
-function _wp_scripts_maybe_doing_it_wrong( $function_name, $handle = '' ) {
+function _wp_scripts_maybe_doing_it_wrong( $function, $handle = '' ) {
 	if ( did_action( 'init' ) || did_action( 'wp_enqueue_scripts' )
 		|| did_action( 'admin_enqueue_scripts' ) || did_action( 'login_enqueue_scripts' )
 	) {
@@ -62,7 +62,7 @@ function _wp_scripts_maybe_doing_it_wrong( $function_name, $handle = '' ) {
 	}
 
 	_doing_it_wrong(
-		$function_name,
+		$function,
 		$message,
 		'3.3.0'
 	);
@@ -81,7 +81,7 @@ function _wp_scripts_maybe_doing_it_wrong( $function_name, $handle = '' ) {
  *
  * @since 2.1.0
  *
- * @param string|string[]|false $handles Optional. Scripts to be printed. Default 'false'.
+ * @param string|bool|array $handles Optional. Scripts to be printed. Default 'false'.
  * @return string[] On success, an array of handles of processed WP_Dependencies items; otherwise, an empty array.
  */
 function wp_print_scripts( $handles = false ) {
@@ -148,7 +148,7 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
 }
 
 /**
- * Registers a new script.
+ * Register a new script.
  *
  * Registers a script to be enqueued later using the wp_enqueue_script() function.
  *
@@ -157,7 +157,6 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
  *
  * @since 2.1.0
  * @since 4.3.0 A return value was added.
- * @since 6.3.0 The $in_footer parameter of type boolean was overloaded to be an $args parameter of type array.
  *
  * @param string           $handle    Name of the script. Should be unique.
  * @param string|false     $src       Full URL of the script, or path of the script relative to the WordPress root directory.
@@ -167,37 +166,25 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
  *                                    as a query string for cache busting purposes. If version is set to false, a version
  *                                    number is automatically added equal to current installed WordPress version.
  *                                    If set to null, no version is added.
- * @param array|bool       $args     {
- *      Optional. An array of additional script loading strategies. Default empty array.
- *      Otherwise, it may be a boolean in which case it determines whether the script is printed in the footer. Default false.
- *
- *      @type string    $strategy     Optional. If provided, may be either 'defer' or 'async'.
- *      @type bool      $in_footer    Optional. Whether to print the script in the footer. Default 'false'.
- * }
+ * @param bool             $in_footer Optional. Whether to enqueue the script before `</body>` instead of in the `<head>`.
+ *                                    Default 'false'.
  * @return bool Whether the script has been registered. True on success, false on failure.
  */
-function wp_register_script( $handle, $src, $deps = array(), $ver = false, $args = array() ) {
-	if ( ! is_array( $args ) ) {
-		$args = array(
-			'in_footer' => (bool) $args,
-		);
-	}
+function wp_register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__, $handle );
 
 	$wp_scripts = wp_scripts();
 
 	$registered = $wp_scripts->add( $handle, $src, $deps, $ver );
-	if ( ! empty( $args['in_footer'] ) ) {
+	if ( $in_footer ) {
 		$wp_scripts->add_data( $handle, 'group', 1 );
 	}
-	if ( ! empty( $args['strategy'] ) ) {
-		$wp_scripts->add_data( $handle, 'strategy', $args['strategy'] );
-	}
+
 	return $registered;
 }
 
 /**
- * Localizes a script.
+ * Localize a script.
  *
  * Works only if the script has already been registered.
  *
@@ -262,7 +249,7 @@ function wp_set_script_translations( $handle, $domain = 'default', $path = '' ) 
 }
 
 /**
- * Removes a registered script.
+ * Remove a registered script.
  *
  * Note: there are intentional safeguards in place to prevent critical admin scripts,
  * such as jQuery core, from being unregistered.
@@ -335,7 +322,7 @@ function wp_deregister_script( $handle ) {
 }
 
 /**
- * Enqueues a script.
+ * Enqueue a script.
  *
  * Registers the script if $src provided (does NOT overwrite), and enqueues it.
  *
@@ -344,7 +331,6 @@ function wp_deregister_script( $handle ) {
  * @see WP_Dependencies::enqueue()
  *
  * @since 2.1.0
- * @since 6.3.0 The $in_footer parameter of type boolean was overloaded to be an $args parameter of type array.
  *
  * @param string           $handle    Name of the script. Should be unique.
  * @param string           $src       Full URL of the script, or path of the script relative to the WordPress root directory.
@@ -354,35 +340,23 @@ function wp_deregister_script( $handle ) {
  *                                    as a query string for cache busting purposes. If version is set to false, a version
  *                                    number is automatically added equal to current installed WordPress version.
  *                                    If set to null, no version is added.
- * @param array|bool       $args     {
- *      Optional. An array of additional script loading strategies. Default empty array.
- *      Otherwise, it may be a boolean in which case it determines whether the script is printed in the footer. Default false.
- *
- *      @type string    $strategy     Optional. If provided, may be either 'defer' or 'async'.
- *      @type bool      $in_footer    Optional. Whether to print the script in the footer. Default 'false'.
- * }
+ * @param bool             $in_footer Optional. Whether to enqueue the script before `</body>` instead of in the `<head>`.
+ *                                    Default 'false'.
  */
-function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $args = array() ) {
+function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__, $handle );
 
 	$wp_scripts = wp_scripts();
 
-	if ( $src || ! empty( $args ) ) {
+	if ( $src || $in_footer ) {
 		$_handle = explode( '?', $handle );
-		if ( ! is_array( $args ) ) {
-			$args = array(
-				'in_footer' => (bool) $args,
-			);
-		}
 
 		if ( $src ) {
 			$wp_scripts->add( $_handle[0], $src, $deps, $ver );
 		}
-		if ( ! empty( $args['in_footer'] ) ) {
+
+		if ( $in_footer ) {
 			$wp_scripts->add_data( $_handle[0], 'group', 1 );
-		}
-		if ( ! empty( $args['strategy'] ) ) {
-			$wp_scripts->add_data( $_handle[0], 'strategy', $args['strategy'] );
 		}
 	}
 
@@ -390,7 +364,7 @@ function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $
 }
 
 /**
- * Removes a previously enqueued script.
+ * Remove a previously enqueued script.
  *
  * @see WP_Dependencies::dequeue()
  *
@@ -415,18 +389,18 @@ function wp_dequeue_script( $handle ) {
  * @since 3.5.0 'enqueued' added as an alias of the 'queue' list.
  *
  * @param string $handle Name of the script.
- * @param string $status Optional. Status of the script to check. Default 'enqueued'.
+ * @param string $list   Optional. Status of the script to check. Default 'enqueued'.
  *                       Accepts 'enqueued', 'registered', 'queue', 'to_do', and 'done'.
  * @return bool Whether the script is queued.
  */
-function wp_script_is( $handle, $status = 'enqueued' ) {
+function wp_script_is( $handle, $list = 'enqueued' ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__, $handle );
 
-	return (bool) wp_scripts()->query( $handle, $status );
+	return (bool) wp_scripts()->query( $handle, $list );
 }
 
 /**
- * Adds metadata to a script.
+ * Add metadata to a script.
  *
  * Works only if the script has already been registered.
  *

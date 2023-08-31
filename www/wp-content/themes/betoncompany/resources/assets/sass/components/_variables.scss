@@ -1,0 +1,33 @@
+// Colors
+$general-color: #d73636;
+//$general-color-dark: #546fcb;
+$border-color: #eaeaea;
+$color: #333;
+
+// Indents
+$general-indent: 27.5px;
+
+// Отступы
+$indent-lg: 12px;
+$indent-md: 10px;
+$indent-sm: 5px;
+// $indent-lg: 20px;
+// $indent-md: 10px;
+// $indent-sm: 5px;
+$indent-list: 20px;
+$indent-static-lg: 20px;		// Изменять нельзя
+$indent-static-md: 10px;		// Изменять нельзя
+$indent-static-sm: 5px;			// Изменять нельзя
+
+
+// Bootstrap
+$bootstrap-indent-lg: 0px;
+$bootstrap-indent-md: 15px;
+$bootstrap-indent-sm: 15px;
+$bootstrap-indent-xs: 7.5px;
+
+
+$whiteIconZoom: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMCAzMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzAgMzAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yOS42IDI3LjhsLTYuNi02LjVjMi0yLjMgMy4yLTUuMiAzLjItOC40IDAtNy4xLTUuOS0xMi45LTEzLjEtMTIuOS03LjIgMC0xMy4xIDUuOC0xMy4xIDEyLjlzNS45IDEyLjkgMTMuMSAxMi45YzMgMCA1LjgtMSA4LTIuN2w2LjcgNi42Yy4zLjMuNS40LjkuNHMuNy0uMS45LS40Yy41LS42LjUtMS40IDAtMS45em0tMjctMTQuOGMwLTUuNyA0LjctMTAuMyAxMC41LTEwLjNzMTAuNSA0LjYgMTAuNSAxMC4zLTQuNyAxMC4zLTEwLjUgMTAuMy0xMC41LTQuNi0xMC41LTEwLjN6TTE4LjMgMTEuNWgtMy45di0zLjhjMC0uOC0uNS0xLjMtMS4zLTEuM3MtMS4zLjUtMS4zIDEuM3YzLjdoLTMuOGMtLjggMC0xLjMuNS0xLjMgMS4zcy41IDEuMyAxLjMgMS4zaDMuOHYzLjljMCAuOC41IDEuMyAxLjMgMS4zczEuMy0uNiAxLjMtMS4zdi0zLjloMy45Yy43IDAgMS4zLS41IDEuMy0xLjNzLS41LTEuMi0xLjMtMS4yeiIvPjwvc3ZnPg==);
+
+
+@import 'fonts'; // Миксины шрифтов

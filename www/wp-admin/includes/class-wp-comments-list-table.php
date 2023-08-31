@@ -140,17 +140,16 @@ class WP_Comments_List_Table extends WP_List_Table {
 		);
 
 		$args = array(
-			'status'                    => isset( $status_map[ $comment_status ] ) ? $status_map[ $comment_status ] : $comment_status,
-			'search'                    => $search,
-			'user_id'                   => $user_id,
-			'offset'                    => $start,
-			'number'                    => $number,
-			'post_id'                   => $post_id,
-			'type'                      => $comment_type,
-			'orderby'                   => $orderby,
-			'order'                     => $order,
-			'post_type'                 => $post_type,
-			'update_comment_post_cache' => true,
+			'status'    => isset( $status_map[ $comment_status ] ) ? $status_map[ $comment_status ] : $comment_status,
+			'search'    => $search,
+			'user_id'   => $user_id,
+			'offset'    => $start,
+			'number'    => $number,
+			'post_id'   => $post_id,
+			'type'      => $comment_type,
+			'orderby'   => $orderby,
+			'order'     => $order,
+			'post_type' => $post_type,
 		);
 
 		/**
@@ -165,6 +164,8 @@ class WP_Comments_List_Table extends WP_List_Table {
 		$_comments = get_comments( $args );
 
 		if ( is_array( $_comments ) ) {
+			update_comment_cache( $_comments );
+
 			$this->items       = array_slice( $_comments, 0, $comments_per_page );
 			$this->extra_items = array_slice( $_comments, $comments_per_page );
 
@@ -456,7 +457,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 	/**
 	 * @global int $post_id
 	 *
-	 * @return string[] Array of column titles keyed by their column name.
+	 * @return array
 	 */
 	public function get_columns() {
 		global $post_id;
@@ -505,11 +506,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 		);
 
 		if ( $comment_types && is_array( $comment_types ) ) {
-			printf(
-				'<label class="screen-reader-text" for="filter-by-comment-type">%s</label>',
-				/* translators: Hidden accessibility text. */
-				__( 'Filter by comment type' )
-			);
+			printf( '<label class="screen-reader-text" for="filter-by-comment-type">%s</label>', __( 'Filter by comment type' ) );
 
 			echo '<select id="filter-by-comment-type" name="comment_type">';
 
@@ -540,8 +537,8 @@ class WP_Comments_List_Table extends WP_List_Table {
 	 */
 	protected function get_sortable_columns() {
 		return array(
-			'author'   => array( 'comment_author', false, __( 'Author' ), __( 'Table ordered by Comment Author.' ) ),
-			'response' => array( 'comment_post_ID', false, _x( 'In Response To', 'column name' ), __( 'Table ordered by Post Replied To.' ) ),
+			'author'   => 'comment_author',
+			'response' => 'comment_post_ID',
 			'date'     => 'comment_date',
 		);
 	}
@@ -580,17 +577,6 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		?>
 <table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
-		<?php
-		if ( ! isset( $_GET['orderby'] ) ) {
-			// In the initial view, Comments are ordered by comment's date but there's no column for that.
-			echo '<caption class="screen-reader-text">' .
-			/* translators: Hidden accessibility text. */
-			__( 'Ordered by Comment Date, descending.' ) .
-			'</caption>';
-		} else {
-			$this->print_table_description();
-		}
-		?>
 	<thead>
 	<tr>
 		<?php $this->print_column_headers(); ?>
@@ -876,10 +862,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		$output .= '</div>';
 
-		$output .= '<button type="button" class="toggle-row"><span class="screen-reader-text">' .
-			/* translators: Hidden accessibility text. */
-			__( 'Show more details' ) .
-		'</span></button>';
+		$output .= '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>';
 
 		return $output;
 	}
@@ -895,14 +878,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		if ( $this->user_can ) {
 			?>
-		<label class="label-covers-full-cell" for="cb-select-<?php echo $comment->comment_ID; ?>">
-			<span class="screen-reader-text">
-			<?php
-			/* translators: Hidden accessibility text. */
-			_e( 'Select comment' );
-			?>
-			</span>
-		</label>
+		<label class="screen-reader-text" for="cb-select-<?php echo $comment->comment_ID; ?>"><?php _e( 'Select comment' ); ?></label>
 		<input id="cb-select-<?php echo $comment->comment_ID; ?>" type="checkbox" name="delete_comments[]" value="<?php echo $comment->comment_ID; ?>" />
 			<?php
 		}

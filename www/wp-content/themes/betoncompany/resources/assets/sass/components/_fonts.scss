@@ -1,0 +1,41 @@
+//Other fonts
+// $font-other-h1: 700 48px / 52px $f;
+// $font-other-h2: 700 42px $f;
+
+// General fonts
+@mixin font-h1 {
+	font: {
+		weight: 700;
+		size: 36px;
+	}
+	line-height: 46px;
+}
+
+@mixin font-h2 {
+	font: {
+		weight: 700;
+		size: 24px;
+	}
+}
+
+@mixin font-h3 {
+	font: {
+		weight: 700;
+		size: 16px;
+	}
+	line-height: 24px;
+}
+
+@mixin font-p {
+	color: #333;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+}
+
+@mixin font-sign {
+	font: {
+		weight: 400;
+		size: 13px;
+	}
+}

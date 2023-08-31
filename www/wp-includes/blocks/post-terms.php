@@ -27,17 +27,14 @@ function render_block_core_post_terms( $attributes, $content, $block ) {
 		return '';
 	}
 
-	$classes = array( 'taxonomy-' . $attributes['term'] );
+	$classes = 'taxonomy-' . $attributes['term'];
 	if ( isset( $attributes['textAlign'] ) ) {
-		$classes[] = 'has-text-align-' . $attributes['textAlign'];
-	}
-	if ( isset( $attributes['style']['elements']['link']['color']['text'] ) ) {
-		$classes[] = 'has-link-color';
+		$classes .= ' has-text-align-' . $attributes['textAlign'];
 	}
 
 	$separator = empty( $attributes['separator'] ) ? ' ' : $attributes['separator'];
 
-	$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( ' ', $classes ) ) );
+	$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => $classes ) );
 
 	$prefix = "<div $wrapper_attributes>";
 	if ( isset( $attributes['prefix'] ) && $attributes['prefix'] ) {
@@ -64,8 +61,8 @@ function render_block_core_post_terms( $attributes, $content, $block ) {
 function register_block_core_post_terms() {
 	$taxonomies = get_taxonomies(
 		array(
-			'publicly_queryable' => true,
-			'show_in_rest'       => true,
+			'public'       => true,
+			'show_in_rest' => true,
 		),
 		'objects'
 	);
@@ -87,7 +84,6 @@ function register_block_core_post_terms() {
 				'term' => $taxonomy->name,
 			),
 			'isActive'    => array( 'term' ),
-			'scope'       => array( 'inserter', 'transform' ),
 		);
 		// Set the category variation as the default one.
 		if ( 'category' === $taxonomy->name ) {

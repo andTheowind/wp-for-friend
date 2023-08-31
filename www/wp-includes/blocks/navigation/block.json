@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
+	"apiVersion": 2,
 	"name": "core/navigation",
 	"title": "Navigation",
 	"category": "theme",
@@ -67,10 +67,6 @@
 		"maxNestingLevel": {
 			"type": "number",
 			"default": 5
-		},
-		"templateLock": {
-			"type": [ "string", "boolean" ],
-			"enum": [ "all", "insert", "contentOnly", false ]
 		}
 	},
 	"providesContext": {
@@ -87,6 +83,7 @@
 		"showSubmenuIcon": "showSubmenuIcon",
 		"openSubmenusOnClick": "openSubmenusOnClick",
 		"style": "style",
+		"orientation": "orientation",
 		"maxNestingLevel": "maxNestingLevel"
 	},
 	"supports": {
@@ -114,11 +111,10 @@
 				"blockGap": true
 			}
 		},
-		"layout": {
+		"__experimentalLayout": {
 			"allowSwitching": false,
 			"allowInheriting": false,
 			"allowVerticalAlignment": false,
-			"allowSizingOnChildren": true,
 			"default": {
 				"type": "flex"
 			}

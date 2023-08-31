@@ -20,7 +20,7 @@
 
 // ** Параметры базы данных: Эту информацию можно получить у вашего хостинг-провайдера ** //
 /** Имя базы данных для WordPress */
-define( 'DB_NAME', 'wordpress' );
+define( 'DB_NAME', 'wp_base' );
 
 /** Имя пользователя базы данных */
 define( 'DB_USER', 'root' );
@@ -37,6 +37,11 @@ define( 'DB_CHARSET', 'utf8mb4' );
 /** Схема сопоставления. Не меняйте, если не уверены. */
 define( 'DB_COLLATE', '' );
 
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+$_SERVER['HTTPS'] = 'on';
+$_SERVER['SERVER_PORT'] = 443;
+}
+
 /**#@+
  * Уникальные ключи и соли для аутентификации.
  *
@@ -48,14 +53,14 @@ define( 'DB_COLLATE', '' );
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         'KC!S|Pgzlg>Kd)=K_X6XU%veqr3dtNqvPH_JR;/-iH]--ddVEvkd{W|Iw@TU;Is^' );
-define( 'SECURE_AUTH_KEY',  'X4](-Um/RlfsH]LN96fuc3:3bHeObUl{0e[?}5GZO01&U[Zg{5Mg2;@oe}!qr[-m' );
-define( 'LOGGED_IN_KEY',    'G.rBTn=9u6F#wtQ_JAe&Td6#QVX<iVv03[K?.zS(t).h%r4&TH1vQG?%3AR-I//r' );
-define( 'NONCE_KEY',        ',ezikDUI=9p:eh<k/BV+t$U-2Z9vq#j</{KG/d9qQ>hV6aSWxP1U{7UaqjdgAfEi' );
-define( 'AUTH_SALT',        'Nkxwy&tqRnf_JX{N.HqhcXnd4D_C[KBs%?Wa(O)>eP]C`+~p?Q//QiOK$Pu[!^:m' );
-define( 'SECURE_AUTH_SALT', 'Of>[=QZXFYu@a#k7k{lhHtogts:>u{(uv(Jt`;]jY*aYt9Yc]Fl7BkZjn5<<5Q%x' );
-define( 'LOGGED_IN_SALT',   '0XE^]m[8i;1Tv>DDv/y:PRv,<RI`0=LKC$p&mm;=,KP.+G6!xg3Y/2L0S?KhPeS)' );
-define( 'NONCE_SALT',       '@_&./6#d5whfU4.4?zJo0(?/03Pplo|./(dMLL4LjfmU8t}?3Ic[&P1;W7a>KbSa' );
+define( 'AUTH_KEY',         'M6F9 _4t}E#jevcz|6E)#MsU,%lng3fii>u `arJA@<&cv=5bJS.+9h^jFQB={)N' );
+define( 'SECURE_AUTH_KEY',  '@]=FO]+}N9^>{0g[%$F9Kzs![<[J]lWdZ9%zKv6@+*J:S&HzzsV7ekBdwQs-E8Uy' );
+define( 'LOGGED_IN_KEY',    ',v[P)Q I)U)CW1?LAJRL<a1O6Ag#>YZjm&aN+qvbE$32{PlP@^.($!TM>diuVo(U' );
+define( 'NONCE_KEY',        'L;vihybJrp|&1Z;A;U>`5aW9JJs%Pf]:dyhN8@VgFOeg*u1n:-rX6;a`j&etABW/' );
+define( 'AUTH_SALT',        'ae6SF!X0Lfd8~KFXaGB`y$XcGWcr577qP`2dH,^gUm.S!qr`NYoSj)1mPSm_@v<Q' );
+define( 'SECURE_AUTH_SALT', 'Z1SH=If*o!].yK?YdP2%>Sx)^%Q+i*ay&jXiKO0m&L/8hCxt2HWNzf++<hKTIEyq' );
+define( 'LOGGED_IN_SALT',   's]rhrP&7<^uw]M_bgR?+c{8IsN#*AbSs(x&&3@e#M>IMkP &?vT-?3QI0wLzkoPF' );
+define( 'NONCE_SALT',       ']R`YI=[6p%H*dx_(V,a[zuz;SYipBVD ]z#;Z;J*2H826!kmn<jx=<T/q(gr:Ud0' );
 
 /**#@-*/
 
@@ -78,11 +83,13 @@ $table_prefix = 'wp_';
  *
  * @link https://ru.wordpress.org/support/article/debugging-in-wordpress/
  */
-define( 'WP_DEBUG', false );
+define( 'WP_DEBUG', true );
 
 /* Произвольные значения добавляйте между этой строкой и надписью "дальше не редактируем". */
-
-
+// define('FORCE_SSL_LOGIN', true);
+// define('FORCE_SSL_ADMIN', true);
+// define( 'WP_HOME','http://'.$_SERVER['SERVER_NAME'].'8080' );
+// define( 'WP_SITEURL','http://'.$_SERVER['SERVER_NAME'].'8080' );
 
 /* Это всё, дальше не редактируем. Успехов! */
 

@@ -74,8 +74,7 @@ class Akismet_Admin {
 		if ( get_option( 'Activated_Akismet' ) ) {
 			delete_option( 'Activated_Akismet' );
 			if ( ! headers_sent() ) {
-				$admin_url = self::get_page_url( 'init' );
-				wp_redirect( $admin_url );
+				wp_redirect( add_query_arg( array( 'page' => 'akismet-key-config', 'view' => 'start' ), class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) ) );
 			}
 		}
 
@@ -91,11 +90,10 @@ class Akismet_Admin {
 	}
 
 	public static function admin_menu() {
-		if ( class_exists( 'Jetpack' ) ) {
+		if ( class_exists( 'Jetpack' ) )
 			add_action( 'jetpack_admin_menu', array( 'Akismet_Admin', 'load_menu' ) );
-		} else {
+		else
 			self::load_menu();
-		}
 	}
 
 	public static function admin_head() {
@@ -134,20 +132,11 @@ class Akismet_Admin {
 			'jetpack_page_akismet-key-config',
 			'plugins.php',
 		) ) ) ) {
-			wp_register_style( 'akismet', plugin_dir_url( __FILE__ ) . '_inc/akismet.css', array(), filemtime( dirname( __FILE__ ) . '/_inc/akismet.css' ) );
-			wp_enqueue_style( 'akismet' );
+			wp_register_style( 'akismet.css', plugin_dir_url( __FILE__ ) . '_inc/akismet.css', array(), AKISMET_VERSION );
+			wp_enqueue_style( 'akismet.css');
 
-			wp_register_style( 'akismet-font-inter', plugin_dir_url( __FILE__ ) . '_inc/fonts/inter.css', array(), filemtime( dirname( __FILE__ ) . '/_inc/fonts/inter.css' ) );
-			wp_enqueue_style( 'akismet-font-inter' );
-
-			wp_register_style( 'akismet-admin', plugin_dir_url( __FILE__ ) . '_inc/akismet-admin.css', array(), filemtime( dirname( __FILE__ ) . '/_inc/akismet-admin.css' ) );
-			wp_enqueue_style( 'akismet-admin' );
-
-			wp_register_script( 'akismet.js', plugin_dir_url( __FILE__ ) . '_inc/akismet.js', array( 'jquery' ), AKISMET_VERSION );
+			wp_register_script( 'akismet.js', plugin_dir_url( __FILE__ ) . '_inc/akismet.js', array('jquery'), AKISMET_VERSION );
 			wp_enqueue_script( 'akismet.js' );
-
-			wp_register_script( 'akismet-admin.js', plugin_dir_url( __FILE__ ) . '_inc/akismet-admin.js', array( 'jquery' ), filemtime( dirname( __FILE__ ) . '/_inc/akismet-admin.js' ) );
-			wp_enqueue_script( 'akismet-admin.js' );
 		
 			$inline_js = array(
 				'comment_author_url_nonce' => wp_create_nonce( 'comment_author_url_nonce' ),
@@ -415,7 +404,7 @@ class Akismet_Admin {
 			$classes[] = 'enable-on-load';
 
 			if ( ! Akismet::get_api_key() ) {
-				$link = self::get_page_url();
+				$link = add_query_arg( array( 'page' => 'akismet-key-config' ), class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) );
 				$classes[] = 'ajax-disabled';
 			}
 		}
@@ -480,7 +469,7 @@ class Akismet_Admin {
 		$moderation = $wpdb->get_col( $wpdb->prepare( "SELECT * FROM {$wpdb->comments} WHERE comment_approved = '0' LIMIT %d OFFSET %d", $limit, $start ) );
 
 		$result_counts = array(
-			'processed' => is_countable( $moderation ) ? count( $moderation ) : 0,
+			'processed' => count( $moderation ),
 			'spam' => 0,
 			'ham' => 0,
 			'error' => 0,
@@ -836,15 +825,14 @@ class Akismet_Admin {
 
 		$args = array( 'page' => 'akismet-key-config' );
 
-		if ( $page == 'stats' ) {
+		if ( $page == 'stats' )
 			$args = array( 'page' => 'akismet-key-config', 'view' => 'stats' );
-		} elseif ( $page == 'delete_key' ) {
+		elseif ( $page == 'delete_key' )
 			$args = array( 'page' => 'akismet-key-config', 'view' => 'start', 'action' => 'delete-key', '_wpnonce' => wp_create_nonce( self::NONCE ) );
-		} elseif ( $page === 'init' ) {
-			$args = array( 'page' => 'akismet-key-config', 'view' => 'start' );
-		}
 
-		return add_query_arg( $args, menu_page_url( 'akismet-key-config', false ) );
+		$url = add_query_arg( $args, class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) );
+
+		return $url;
 	}
 	
 	public static function get_akismet_user( $api_key ) {
@@ -973,18 +961,18 @@ class Akismet_Admin {
 			self::display_configuration_page();
 			return;
 		}
-
+		
 		//the user can choose to auto connect their API key by clicking a button on the akismet done page
 		//if jetpack, get verified api key by using connected wpcom user id
 		//if no jetpack, get verified api key by using an akismet token	
-
+		
 		$akismet_user = false;
-
+		
 		if ( isset( $_GET['token'] ) && preg_match('/^(\d+)-[0-9a-f]{20}$/', $_GET['token'] ) )
 			$akismet_user = self::verify_wpcom_key( '', '', array( 'token' => $_GET['token'] ) );
 		elseif ( $jetpack_user = self::get_jetpack_user() )
 			$akismet_user = self::verify_wpcom_key( $jetpack_user['api_key'], $jetpack_user['user_id'] );
-
+			
 		if ( isset( $_GET['action'] ) ) {
 			if ( $_GET['action'] == 'save-key' ) {
 				if ( is_object( $akismet_user ) ) {
@@ -1062,6 +1050,10 @@ class Akismet_Admin {
 				
 				$notices[] =  array( 'type' => 'active-notice', 'time_saved' => $time_saved );
 			}
+			
+			if ( !empty( $akismet_user->limit_reached ) && in_array( $akismet_user->limit_reached, array( 'yellow', 'red' ) ) ) {
+				$notices[] = array( 'type' => 'limit-reached', 'level' => $akismet_user->limit_reached );
+			}
 		}
 		
 		if ( !isset( self::$notices['status'] ) && in_array( $akismet_user->status, array( 'cancelled', 'suspended', 'missing', 'no-sub' ) ) ) {
@@ -1090,6 +1082,8 @@ class Akismet_Admin {
 		$notices[] = array( 'type' => 'new-key-invalid' );
 		$notices[] = array( 'type' => 'existing-key-invalid' );
 		$notices[] = array( 'type' => 'new-key-failed' );
+		$notices[] = array( 'type' => 'limit-reached', 'level' => 'yellow' );
+		$notices[] = array( 'type' => 'limit-reached', 'level' => 'red' );
 		$notices[] = array( 'type' => 'usage-limit', 'api_calls' => '15000', 'usage_limit' => '10000', 'upgrade_plan' => 'Enterprise', 'upgrade_url' => 'https://akismet.com/account/' );
 		$notices[] = array( 'type' => 'spam-check-cron-disabled' );
 		*/
@@ -1202,7 +1196,7 @@ class Akismet_Admin {
 
 		if ( !$xml->isError() ) {
 			$responses = $xml->getResponse();
-			if ( ( is_countable( $responses ) ? count( $responses ) : 0 ) > 1 ) {
+			if ( count( $responses ) > 1 ) {
 				// Due to a quirk in how Jetpack does multi-calls, the response order
 				// can't be trusted to match the call order. It's a good thing our
 				// return values can be mostly differentiated from each other.
@@ -1311,7 +1305,7 @@ class Akismet_Admin {
 		}
 
 		// Tell core if we have more comments to work on still
-		$done = ( is_countable( $comments ) ? count( $comments ) : 0 ) < $number;
+		$done = count( $comments ) < $number;
 		
 		return array(
 			'items_removed' => $items_removed,
